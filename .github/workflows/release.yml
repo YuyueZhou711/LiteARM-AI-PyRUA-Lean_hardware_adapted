@@ -1,0 +1,27 @@
+# Release caller for a NexForm repository.
+# The central workflow owns versioning, tags, and GitHub Releases. This repository
+# owns build and publish jobs, if it ships anything.
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    uses: nexform-tech/workflows/.github/workflows/release.yml@v1
+    # Uncomment to keep semantic-release's 1.0.0 first release instead of the
+    # bootstrapped 0.x line.
+    # with:
+    #   initial-version: ""
