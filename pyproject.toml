@@ -3,15 +3,21 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "LiteARM-AI-PyRUA-Lean"
+name = "litearm-ai-pyrua-lean"
 version = "0.1.0"
-description = "LiteARM AI, PyRUA and Lean tooling."
+description = "LiteArm integration for PyRUA-Lean and RoboDojo."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+test = ["pytest>=7", "numpy>=1.24", "pyyaml>=6", "pillow>=9"]
+
+[project.scripts]
+litearm-ai-pyrua-lean = "litearm_ai_pyrua_lean.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/nexform-tech/LiteARM-AI-PyRUA-Lean"
 
 [tool.setuptools.packages.find]
 where = ["src"]

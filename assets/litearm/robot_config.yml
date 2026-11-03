@@ -1,0 +1,31 @@
+urdf_path: "./litearm.urdf"
+ee_joints: "joint7"
+ee_link: "tcp_link"
+ee_type: "gripper"
+base_link: "base_link"
+arm_joints_name: ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7']
+gripper_joints_name: ['gripper_slide_joint_right', 'gripper_slide_joint_left']
+save_gripper_joints_name: ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6', 'joint7', 'gripper_slide_joint_right', 'gripper_slide_joint_left']
+# LiteGrip: q = 0 is fully open and q = +0.042500 (42.5 mm per finger, the
+# official LiteGrip stroke) is fully closed.  sign -1 makes the policy's
+# 1.0 = open, 0.0 = closed (the X5 convention).
+gripper_move:
+    base: "gripper_slide_joint_right"
+    sign: -1.0
+    mimic: ["gripper_slide_joint_left", 1., 0.]
+# ee_link is tcp_link, the grasp point itself.
+gripper_bias: 0.0
+gripper_scale: [0.0, 0.0425]
+delta_matrix: [[1,0,0],[0,1,0],[0,0,1]]
+global_trans_matrix: [[1,0,0],[0,1,0],[0,0,1]]
+dual_arm: False
+grasp_camera_reference_axis: [1, 0, 0] # tcp_link x: the approach direction
+camera:
+  -
+    link: "camera_link"
+    name: "cam_wrist"
+    type: d435
+    mesh: pinhole
+    pos: [0, 0, 0]
+    # camera_link x is the approach direction; -70 deg looks forward and 20 deg down
+    ori: [0, -70, 0]

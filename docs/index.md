@@ -1,18 +1,31 @@
 # Documentation
 
-Documentation for `LiteARM-AI-PyRUA-Lean`, the AI, PyRUA and Lean tooling
-repository for the LiteArm robotic manipulator series.
+Use these pages to install the LiteArm stack and run an evaluation.
 
 ## Start here
 
-- [Setup](setup.md): install, build, and verify the project.
-- [Architecture](architecture.md): modules, data flow, and boundaries.
+- [Setup](setup.md): prerequisites, installation on one or two machines, asset
+  download and verification.
+- [Usage](usage.md): model endpoint configuration, single-machine and split
+  evaluation, output locations and common failures.
+- [Architecture](architecture.md): the policy server, simulator client, LiteArm
+  asset pipeline and the pinned upstream revisions.
 
-## Tasks
+## Scope
 
-- Define the first AI / PyRUA / Lean workstream on the delivery board.
-- Document the interfaces between the Python and Lean components.
+This repository combines three upstream projects:
+
+| Project | Role |
+| --- | --- |
+| PyRUA-Lean | Policy server; writes robot programs and drives the tools |
+| RoboDojo | Isaac Sim benchmark and evaluation client |
+| XPolicyLab | WebSocket transport and policy adapter framework |
+
+The LiteArm additions are the robot description and assets, the `litearm`
+environment configuration, the policy adapter and tools, and the changes needed
+to evaluate `stack_blocks` and related tasks.
 
 ## Reference
 
 - [Project README](../README.md)
+- [Third-party notices](../NOTICE)

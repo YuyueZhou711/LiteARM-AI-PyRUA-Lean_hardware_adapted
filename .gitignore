@@ -6,3 +6,23 @@ dist/
 .pytest_cache/
 .ruff_cache/
 .venv/
+
+# Local endpoint credentials
+config/env.sh
+
+# Third-party checkouts and downloaded data
+robodojo/XPolicyLab/
+robodojo/third_party/IsaacLab/
+robodojo/third_party/curobo/
+robodojo/Assets
+robodojo/.cache/
+robodojo/eval_result/
+robodojo/smoke_results/
+pyrua-lean/integrations/xpolicylab/PyRUA_Lean/checkpoints/
+
+# Runtime output
+*.log
+tools/litearm/grasp_runs/
+tools/litearm/failed_runs/
+tools/litearm/mock_smoke/
+tools/litearm/runs/
