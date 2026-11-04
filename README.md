@@ -1,14 +1,15 @@
 Install and evaluate the LiteArm SE dual-arm station on RoboDojo with a
-PyRUA-Lean code policy.
+PyRUA-Lean code policy, for engineers who need a reproducible setup of the
+simulator, policy server and robot assets.
 
-# LiteARM AI, PyRUA-Lean on RoboDojo
+English | [简体中文](README.zh-CN.md)
 
-This repository runs the LiteArm SE dual-arm station in the RoboDojo simulator
-with a PyRUA-Lean code policy. The policy server writes robot programs against
-the LiteArm tools; the RoboDojo client executes them in Isaac Sim. It is for
-engineers who need a reproducible install of both halves of the stack, including
-the LiteArm robot asset, environment configuration, evaluation scripts, and the
-data used for the official `stack_blocks` run.
+# LiteArm AI, PyRUA-Lean on RoboDojo
+
+This repository contains both halves of the stack. The policy server writes
+robot programs against the LiteArm tools; the RoboDojo client executes them in
+Isaac Sim. It includes the LiteArm robot asset, environment configuration,
+evaluation scripts and the data used for the official `stack_blocks` run.
 
 ## Demo
 
@@ -24,10 +25,17 @@ Full video: [stack_blocks.mp4](docs/assets/videos/stack_blocks.mp4)
 
 Full video: [cover_blocks.mp4](docs/assets/videos/cover_blocks.mp4)
 
+`align_blocks`, seed 0:
+
+![align_blocks demo](docs/assets/videos/align_blocks.gif)
+
+Full video: [align_blocks.mp4](docs/assets/videos/align_blocks.mp4)
+
 The `stack_blocks` seed-0 evaluation completed with success rate 1.0 and score
-100 after 1379 steps. The simulator ran on Ubuntu 22.04 with an RTX 4060 8 GB;
-the policy server ran on a Jetson AGX Thor 128 GB. The recordings above are from
-those runs.
+100 after 1379 steps. The `align_blocks` seed-0 run on 2026-11-03 also returned
+success rate 1.0 and score 100. The simulator ran on Ubuntu 22.04 with an RTX
+4060 8 GB; the policy server ran on a Jetson AGX Thor 128 GB. The recordings are
+from reference-machine runs.
 
 ## What is included
 
@@ -44,15 +52,10 @@ those runs.
 ## Requirements
 
 - Ubuntu 22.04 on x86_64. Other Linux distributions are not verified.
-- An NVIDIA GPU with a current driver. The simulator runs on 8 GB at the
-  160x120 camera resolution used here. SAM3, the policy server's segmentation
-  model, needs another 5-6 GB, so use two hosts below 16 GB total, or one host
-  with at least 16 GB.
-- About 40 GB of disk for Isaac Sim and IsaacLab, plus tens of GB for the
-  RoboDojo asset dataset and 3.4 GB for the SAM3 checkpoint.
+- An NVIDIA GPU with a current driver. The simulator runs on 8 GB at the 160x120 camera resolution used here. SAM3, the policy server's segmentation model, needs another 5-6 GB, so use two hosts below 16 GB total, or one host with at least 16 GB.
+- About 40 GB of disk for Isaac Sim and IsaacLab, plus tens of GB for the RoboDojo asset dataset and 3.4 GB for the SAM3 checkpoint.
 - Conda or Miniconda, `git`, `git-lfs`, and `wget`.
-- An OpenAI-compatible chat endpoint and an API key. No key is stored in this
-  repository.
+- An OpenAI-compatible chat endpoint and an API key. No key is stored in this repository.
 
 ## Quick start on one machine
 
@@ -68,9 +71,15 @@ bash scripts/run_eval.sh --task stack_blocks --seed 0
 
 `scripts/setup.sh` installs both conda environments and can take an hour or more
 on a fresh host. Use `--skip-sim` on a policy-server host and `--skip-policy` on
-a simulator host.
+a simulator host. The scripts encode the reference-machine steps; a fresh-host
+run is not verified. See [Setup](docs/setup.md) for the verification status.
+
+**Do not** commit `config/env.sh`, paste the key into an issue, or put it in a
+script; the file is git-ignored.
 
 ## Split setup
+
+Run these commands from the repository root on each host.
 
 Policy server host:
 
@@ -87,7 +96,7 @@ Simulator host:
 ```bash
 bash scripts/setup.sh --skip-policy
 bash scripts/fetch_assets.sh --skip-sam3
-POLICY_HOST=<policy-server-ip> bash scripts/run_client.sh
+POLICY_HOST=192.168.1.10 bash scripts/run_client.sh
 ```
 
 `scripts/fetch_assets.sh --policy-only` downloads only the SAM3 checkpoint. The
@@ -100,14 +109,6 @@ simulator host downloads the RoboDojo dataset and installs the LiteArm asset;
 - [Setup](docs/setup.md): prerequisites, installation, assets, verification.
 - [Usage](docs/usage.md): model configuration, single and split evaluation.
 - [Architecture](docs/architecture.md): components, data flow, upstream pins.
-
-## Verified scope
-
-The `stack_blocks` seed-0 result and the two recordings were produced with the
-code in this repository on the reference machine. The install scripts encode the
-steps that were used there; a fresh-host run of the scripts has not been
-verified. GPU memory, driver version and endpoint behaviour are the most common
-sources of differences.
 
 ## License
 

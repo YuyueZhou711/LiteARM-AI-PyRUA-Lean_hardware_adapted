@@ -1,7 +1,9 @@
+This guide configures the model endpoint and runs LiteArm evaluations for
+engineers operating the installed stack.
+
 # Usage
 
-This guide configures the model endpoint and runs LiteArm evaluations. All
-commands run from the repository root.
+All commands run from the repository root.
 
 ## Model endpoint configuration
 
@@ -14,18 +16,20 @@ cp config/env.example.sh config/env.sh
 
 ```bash
 # config/env.sh
-export OPENAI_BASE_URL="https://your-endpoint.example/v1"
+export OPENAI_BASE_URL="https://api.example.com/v1"
 export OPENAI_API_KEY="replace-with-your-key"
-export PYRUALEAN_MODEL="your-model-name"
+export PYRUALEAN_MODEL="gpt-6.1-sol"
 ```
 
-`config/env.sh` is git-ignored. **Do not** commit it, print it in logs, or attach
-it to an issue. `scripts/run_eval.sh` and `scripts/run_server.sh` source the file
-automatically and stop if a variable is missing.
+The reference run used `gpt-6.1-sol`; set the model name your endpoint serves.
+
+`config/env.sh` is git-ignored. **Do not** commit it, print it in logs, or
+attach it to an issue. `scripts/run_eval.sh` and `scripts/run_server.sh` source
+the file automatically and stop if a variable is missing.
 
 The policy adapter's `deploy.yml` sets `max_turns: 100` and `budget_s: 5400` and
-requests `reasoning_effort: high`. Adjust `robodojo/XPolicyLab/policy/PyRUA_Lean/deploy.yml`
-to change those limits.
+requests `reasoning_effort: high`. Adjust
+`robodojo/XPolicyLab/policy/PyRUA_Lean/deploy.yml` to change those limits.
 
 ## Single-machine evaluation
 
@@ -34,7 +38,7 @@ bash scripts/run_eval.sh --task stack_blocks --seed 0
 ```
 
 The wrapper starts the policy server and the Isaac Sim client on localhost and
-passes `--action-type joint`. Useful options:
+passes `--action-type joint`. Options:
 
 | Option | Default | Meaning |
 | --- | --- | --- |
@@ -43,8 +47,8 @@ passes `--action-type joint`. Useful options:
 | `--env-cfg` | `litearm` | RoboDojo environment configuration |
 | `--eval-num` | `1` | Episodes per task |
 
-Extra arguments after `--` go to `robodojo/scripts/robodojo.sh eval`, for example
-`bash scripts/run_eval.sh -- --dry-run`.
+Extra arguments after `--` go to `robodojo/scripts/robodojo.sh eval`, for
+example `bash scripts/run_eval.sh -- --dry-run`.
 
 ## Split evaluation
 
@@ -71,20 +75,21 @@ RoboDojo environment and the LiteArm assets; it does not need the API key.
 | Task | Status |
 | --- | --- |
 | `stack_blocks` | Verified, seed 0: success rate 1.0, score 100, 1379 steps |
+| `align_blocks` | Verified, seed 0: success rate 1.0, score 100 (2026-11-03) |
 | `cover_blocks` | Demonstrated in the recording; not part of the verified result |
 | Other RoboDojo tasks | Runnable with `--env-cfg litearm`, but not verified on LiteArm |
 
-`fold_clothes` needs at least 16 GB of GPU memory for the simulator; the reference
-8 GB card fails on Vulkan memory during scene setup. `stack_bowls` is not a good
-LiteArm task: the LiteGrip opens to 8.7 cm and the bowls are 12 cm wide, so the
-gripper can only catch the rim.
+`fold_clothes` needs at least 16 GB of GPU memory for the simulator; the
+reference 8 GB card fails on Vulkan memory during scene setup. `stack_bowls` is
+not a good LiteArm task: the LiteGrip opens to 8.7 cm and the bowls are 12 cm
+wide, so the gripper can only catch the rim.
 
 ## Outputs
 
-Each episode writes a timestamped directory under:
+Each episode writes a timestamped directory, for example:
 
 ```text
-robodojo/eval_result/RoboDojo/<task>/<policy>/<env_cfg>/<seed and options>/<timestamp>/
+robodojo/eval_result/RoboDojo/stack_blocks/PyRUA_Lean/litearm/0_ckpt_name=no-checkpoint,action_type=joint/2026-10-30_17-00-03/
 ```
 
 The directory contains `_result.json`, the policy call log, and images from the
@@ -109,6 +114,9 @@ grasp threshold failed, and 2 means the simulation or script failed. The script
 is a diagnostic; it does not produce a benchmark result.
 
 ## Troubleshooting
+
+**Do not** start the policy server in the `RoboDojo` environment: its
+`websockets` version is 12, and the server requires 14 or newer.
 
 | Symptom | Likely cause | Action |
 | --- | --- | --- |

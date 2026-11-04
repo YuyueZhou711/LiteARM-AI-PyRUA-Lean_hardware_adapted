@@ -1,7 +1,7 @@
-# Architecture
-
 This document describes the components, data flow and boundaries of the LiteArm
-stack in this repository.
+stack for engineers maintaining or extending it.
+
+# Architecture
 
 ## Components
 
@@ -16,15 +16,11 @@ stack in this repository.
 
 ## Data flow
 
-1. `scripts/run_eval.sh` calls `robodojo/scripts/robodojo.sh eval`, which starts
-   the policy server and the simulator client on localhost.
-2. The policy server loads the PyRUA-Lean LiteArm adapter, the SAM3 checkpoint
-   and `deploy.yml`. It asks the configured chat endpoint for a program.
-3. The program calls LiteArm tools. Each call travels over the XPolicyLab
-   WebSocket to the evaluation client.
+1. `scripts/run_eval.sh` calls `robodojo/scripts/robodojo.sh eval`, which starts the policy server and the simulator client on localhost.
+2. The policy server loads the PyRUA-Lean LiteArm adapter, the SAM3 checkpoint and `deploy.yml`. It asks the configured chat endpoint for a program.
+3. The program calls LiteArm tools. Each call travels over the XPolicyLab WebSocket to the evaluation client.
 4. The client applies the action in Isaac Sim and returns the new observation.
-5. When the episode ends, the client writes `_result.json` and the episode
-   artifacts under `robodojo/eval_result/`.
+5. When the episode ends, the client writes `_result.json` and the episode artifacts under `robodojo/eval_result/`.
 
 In a split setup, steps 2 and 3 run on the policy host and steps 4 and 5 run on
 the simulator host. The WebSocket connection is the only link between them.
@@ -64,26 +60,16 @@ the `policy/PyRUA_Lean` link to the PyRUA-Lean adapter. The vendored
 
 The asset under `assets/litearm/` is the result of this pipeline:
 
-1. `tools/litearm/build_litearm_assets.py` composes the official LiteArm SE and
-   LiteGrip descriptions into `litearm.urdf` and copies the meshes. It needs the
-   NEXFORM description repositories, which are not part of this repository.
-2. `tools/litearm/convert_litearm_usd.py` imports the URDF into Isaac Sim and
-   writes `litearm.usd` plus its configuration layers.
-3. `tools/litearm/collision_normalization.py` moves the `CollisionAPI` from the
-   STL wrapper Xforms onto the meshes. Without it, `UsdPhysics` finds zero
-   collision shapes.
-4. `tools/litearm/drive_normalization.py` changes the two gripper prismatic
-   drives from acceleration to force, so the configured gains act as N/m and
-   N s/m. The arm's angular drives keep their original mode.
-5. The two finger joints are coupled with a PhysX mimic joint, so the fingers
-   stay symmetric under load.
-6. `tools/litearm/build_curobo_config.py` fits collision spheres to the meshes
-   and writes `curobo_tmp.yml`. `scripts/fetch_assets.sh` replaces
-   `${ASSETS_PATH}` and installs `curobo.yml` in the RoboDojo asset tree.
+1. `tools/litearm/build_litearm_assets.py` composes the official LiteArm SE and LiteGrip descriptions into `litearm.urdf` and copies the meshes. It needs the NEXFORM description repositories, which are not part of this repository.
+2. `tools/litearm/convert_litearm_usd.py` imports the URDF into Isaac Sim and writes `litearm.usd` plus its configuration layers.
+3. `tools/litearm/collision_normalization.py` moves the `CollisionAPI` from the STL wrapper Xforms onto the meshes. Without it, `UsdPhysics` finds zero collision shapes.
+4. `tools/litearm/drive_normalization.py` changes the two gripper prismatic drives from acceleration to force, so the configured gains act as N/m and N s/m. The arm's angular drives keep their original mode.
+5. The two finger joints are coupled with a PhysX mimic joint, so the fingers stay symmetric under load.
+6. `tools/litearm/build_curobo_config.py` fits collision spheres to the meshes and writes `curobo_tmp.yml`. `scripts/fetch_assets.sh` replaces `${ASSETS_PATH}` and installs `curobo.yml` in the RoboDojo asset tree.
 
-The prebuilt asset in `assets/litearm/` is the validated output of this pipeline.
-The URDF and meshes are included so the asset can be rebuilt and so the
-kinematics tests can run.
+The prebuilt asset in `assets/litearm/` is the validated output of this
+pipeline. The URDF and meshes are included so the asset can be rebuilt and so
+the kinematics tests can run.
 
 ## Policy adapter
 
@@ -100,16 +86,15 @@ operator.
 
 ## Boundaries and limitations
 
-- This repository owns the LiteArm assets, adapter, environment configuration,
-  evaluation scripts and the modified upstream snapshots. It does not own
-  IsaacLab or cuRobo; both are cloned at pinned revisions.
-- The RoboDojo asset dataset and the SAM3 checkpoint are downloaded, not stored
-  here.
-- The reference result is `stack_blocks` seed 0. `cover_blocks` was recorded but
-  is not part of the verified result; other tasks are unverified on LiteArm.
-- The simulator uses 640x480 colour cameras without depth. The reference 8 GB GPU
-  runs the simulator only with reduced cameras; SAM3 needs a separate GPU.
+- This repository owns the LiteArm assets, adapter, environment configuration, evaluation scripts and the modified upstream snapshots. It does not own IsaacLab or cuRobo; both are cloned at pinned revisions.
+- The RoboDojo asset dataset and the SAM3 checkpoint are downloaded, not stored here.
+- The reference results are `stack_blocks` and `align_blocks` at seed 0. `cover_blocks` was recorded but is not part of the verified results; other tasks are unverified on LiteArm.
+- The simulator uses 640x480 colour cameras without depth. The reference 8 GB GPU runs the simulator only with reduced cameras; SAM3 needs a separate GPU.
 - The LiteGrip opens to 8.7 cm, which excludes grasps on the 12 cm bowls.
+
+**Do not** treat `robodojo/XPolicyLab/` as source: it is git-ignored and
+regenerated by `scripts/fetch_sources.sh`. Put XPolicyLab changes in
+`integrations/xpolicylab/`.
 
 ## Security
 

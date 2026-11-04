@@ -1,27 +1,18 @@
+This notice lists the third-party components bundled in this repository and the
+license that applies to each, for anyone redistributing or extending the
+repository.
+
 # Notices
 
-This repository distributes modified copies of third-party open-source
-projects. Their licenses are kept in the corresponding directories.
+This repository distributes modified copies of third-party open-source projects.
+Their licenses are kept in the corresponding directories.
 
-- PyRUA-Lean, <https://github.com/DAGroup-PKU/PyRUA-Lean>
-  Copyright PyRUA-Lean Contributors. Apache License 2.0, see
-  [pyrua-lean/LICENSE](pyrua-lean/LICENSE) and
-  [pyrua-lean/NOTICE](pyrua-lean/NOTICE). This copy adds the LiteArm adapter
-  and is based on upstream commit `ffad6d4`.
+- PyRUA-Lean, <https://github.com/DAGroup-PKU/PyRUA-Lean>: Copyright PyRUA-Lean Contributors, Apache License 2.0, see [pyrua-lean/LICENSE](pyrua-lean/LICENSE) and [pyrua-lean/NOTICE](pyrua-lean/NOTICE). This copy adds the LiteArm adapter and is based on upstream commit `ffad6d4`.
+- RoboDojo, <https://github.com/RoboDojo-Benchmark/RoboDojo>: Copyright (c) 2026 RoboDojo Contributors, MIT License, see [robodojo/LICENSE](robodojo/LICENSE). This copy adds the LiteArm robot, environment configuration and task tuning, and is based on upstream commit `f57e163`.
+- XPolicyLab, <https://github.com/XPolicyLab/XPolicyLab>: Apache License 2.0, see [integrations/xpolicylab/LICENSE](integrations/xpolicylab/LICENSE). The files under `integrations/xpolicylab` are changes on top of upstream commit `5d0be14`.
 
-- RoboDojo, <https://github.com/RoboDojo-Benchmark/RoboDojo>
-  Copyright (c) 2026 RoboDojo Contributors. MIT License, see
-  [robodojo/LICENSE](robodojo/LICENSE). This copy adds the LiteArm robot,
-  environment configuration and task tuning. It is based on upstream commit
-  `f57e163`.
-
-- XPolicyLab, <https://github.com/XPolicyLab/XPolicyLab>
-  Apache License 2.0, see [integrations/xpolicylab/LICENSE](integrations/xpolicylab/LICENSE).
-  The files under `integrations/xpolicylab` are changes on top of upstream
-  commit `5d0be14`.
-
-The LiteArm robot description, meshes and USD assets under `assets/litearm`
-are copyright NEXFORM ROBOTICS and are included for use with the LiteArm
-hardware and simulator.
+The LiteArm robot description, meshes and USD assets under `assets/litearm` are
+copyright NEXFORM ROBOTICS and are included for use with the LiteArm hardware
+and simulator.
 
 The repository's own license has not been decided yet.
