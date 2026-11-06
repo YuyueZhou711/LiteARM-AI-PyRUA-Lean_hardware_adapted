@@ -4,6 +4,7 @@
 |---|---|---|---|---|
 | `robodojo_xpl_rgb` | [RoboDojo](robodojo.md) | XPolicyLab, under RoboDojo's own evaluation client | none (SAM3 for segmentation) | three colour cameras |
 | `litearm` | [RoboDojo](litearm.md) | XPolicyLab, dual 7-DoF LiteArm SE + LiteGrip | none (SAM3 for segmentation) | three colour cameras |
+| `litearm_real` | [LiteArm Real](litearm-real.md) | A calibrated real dual LiteArm / LiteGrip station through a localhost hardware service | none (SAM3 for segmentation) | head RGB-D (or RGB) + two wrist RGB cameras |
 | `libero` (default) | [LIBERO-PRO](libero.md) | RPent | Pi0.5 (and SAM3) | `agentview`, `wrist` |
 | `robotwin` | [RoboTwin 2.0](robotwin.md) | RPent | LingBot-VLA | `head`, two wrists |
 | `robocasa` | [RoboCasa365](robocasa.md) | RPent | RLDX-1 | `agentview`, `navview`, `wrist` |

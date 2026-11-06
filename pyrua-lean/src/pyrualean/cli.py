@@ -39,7 +39,11 @@ STARTUP_ALLOWANCE_S = 900.0
 
 
 def _cell_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--robot", default="libero", help="libero | robocasa | robotwin | robodojo")
+    parser.add_argument(
+        "--robot",
+        default="libero",
+        help="libero | robocasa | robotwin | robodojo | litearm | litearm_real | robocoliseum",
+    )
     parser.add_argument(
         "--suite",
         default=None,
@@ -72,6 +76,12 @@ def _host_argv(args: argparse.Namespace, command: str) -> list[str]:
     ]
     if args.suite:
         argv += ["--suite", args.suite]
+    if getattr(args, "hardware_config", None):
+        argv += ["--hardware-config", str(args.hardware_config)]
+    if getattr(args, "instruction", None):
+        argv += ["--instruction", str(args.instruction)]
+    if getattr(args, "execution_mode", None):
+        argv += ["--execution-mode", str(args.execution_mode)]
     if args.robot == "libero":
         argv += ["--libero-type", args.libero_type]
     if args.cuda_device is not None:
@@ -206,6 +216,12 @@ def cmd_play(args: argparse.Namespace) -> int:
     ]
     if args.suite:
         argv += ["--suite", args.suite]
+    if getattr(args, "hardware_config", None):
+        argv += ["--hardware-config", str(args.hardware_config)]
+    if getattr(args, "instruction", None):
+        argv += ["--instruction", str(args.instruction)]
+    if getattr(args, "execution_mode", None):
+        argv += ["--execution-mode", str(args.execution_mode)]
     if args.robot == "libero":
         argv += ["--libero-type", args.libero_type]
     if args.cuda_device is not None:
@@ -262,6 +278,8 @@ def cmd_play(args: argparse.Namespace) -> int:
                     "arm",
                     "status",
                     "environment_success",
+                    "environment_success_known",
+                    "task_success",
                     "tool_turns",
                     "env_steps",
                     "policy_wall_s",
@@ -381,6 +399,22 @@ def main(argv: list[str] | None = None) -> int:
     play.add_argument("--max-turns", type=int, default=None, help="decision budget (tool calls)")
     play.add_argument("--vla-endpoint", default=None, help="host:port of a shared Pi0.5 server")
     play.add_argument("--sam3-endpoint", default=None, help="host:port of a shared SAM3 server")
+    play.add_argument(
+        "--hardware-config",
+        default=None,
+        help="absolute station JSON for --robot litearm_real",
+    )
+    play.add_argument(
+        "--instruction",
+        default=None,
+        help="natural-language task instruction for --robot litearm_real",
+    )
+    play.add_argument(
+        "--execution-mode",
+        choices=("read-only", "offline-fake", "live"),
+        default=None,
+        help="override execution.mode in the station file",
+    )
     play.add_argument(
         "--runtime",
         choices=("codex", "claude", "openai"),

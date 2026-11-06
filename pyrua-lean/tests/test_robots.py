@@ -64,6 +64,7 @@ def test_registry_knows_libero_and_lists_the_other_robots():
         "robodojo_xpl",
         "robodojo_xpl_rgb",
         "litearm",
+        "litearm_real",
         "robocoliseum",
     )
     with pytest.raises(ValueError):

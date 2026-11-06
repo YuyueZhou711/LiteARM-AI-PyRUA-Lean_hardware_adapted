@@ -1,0 +1,27 @@
+# Agent side of the real LiteArm path: the PyRUA-Lean runner, planner and
+# perception.  No vendor hardware SDK is installed here.
+#
+#   conda env create -f environments/litearm-agent.yml
+#   conda activate pyrualean-hw-agent
+#   python -m pip install -e .
+#
+# SAM3 runs on the Jetson Thor; the agent only needs the stdlib HTTP client.
+# Set perception.sam3.mode="http" and perception.sam3.endpoint to Thor.  A
+# local SAM3 checkpoint remains supported for offline/other deployments by
+# installing torch/sam3 separately; the agent tests use a scripted segmenter.
+name: pyrualean-hw-agent
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - setuptools>=77
+      - wheel
+      - numpy==1.26.4
+      - pillow==13.0.0
+      - scipy==1.17.1
+      - opencv-python-headless==4.11.0.86
+      - pytest==9.1.1
+      - mcp>=1.8,<2
+      - uvicorn

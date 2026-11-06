@@ -1,0 +1,26 @@
+# Device side of the real LiteArm path: the hardware service.  The vendor SDKs
+# are NOT on PyPI in the verified versions.  Build fixed wheels from the
+# checked-out sources and install them into this environment:
+#
+#   conda env create -f environments/litearm-device.yml
+#   conda activate litearm-hw-device
+#   scripts/build_litearm_device_wheels.sh
+#   python -m pip install --no-index --find-links wheelhouse \
+#       litearm-python==2.1.0 litegrip-python==2.2.0
+#   python -m pip install --no-deps -e .
+#
+# Do not substitute an editable install of a vendor SDK on the driving machine.
+name: litearm-hw-device
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - setuptools>=77
+      - wheel
+      - numpy==1.26.4
+      - pillow==13.0.0
+      - opencv-python-headless==4.11.0.86
+      - pyserial>=3.4
+      - pytest==9.1.1

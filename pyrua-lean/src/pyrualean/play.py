@@ -116,6 +116,39 @@ def copy_guides(source: Path, target: Path, names: tuple[str, ...] | None = None
     return digests
 
 
+def _real_contract(text: str) -> str:
+    """Adjust the generated contract for a robot with no simulator and no verdict.
+
+    The shared wording is correct for benchmark robots.  The hardware path has
+    a real service instead of a simulator and deliberately has no task-success
+    evaluator, so those sentences must not tell the model otherwise.
+    """
+
+    text = text.replace("bound to the live simulator", "bound to the real LiteArm workstation")
+    text = text.replace("the simulator; every action", "the hardware service; every action")
+    text = text.replace(
+        "- Success is judged by the benchmark from the final scene, after the episode\n"
+        "  has ended.  Nothing reports it while you work: no result carries a\n"
+        "  task-success flag, so judge progress from the images and the robot state.",
+        "- Task success is NOT measured: no independent evaluator is connected, no result\n"
+        '  carries a task-success flag, and `finish(status="success")` is your statement\n'
+        "  only.  Judge progress from the measured state and images, then stop.",
+    )
+    text = text.replace(
+        "- Success is judged by the benchmark from the final scene, after the episode\n"
+        "  has ended.  Nothing reports it while a program runs: no result carries a\n"
+        "  task-success flag.",
+        "- Task success is NOT measured: no independent evaluator is connected and no\n"
+        '  result carries a task-success flag; `finish(status="success")` is your\n'
+        "  statement only.",
+    )
+    text = text.replace("simulator step budget", "device-action budget")
+    text = text.replace("simulator steps", "device actions")
+    text = text.replace("simulator step", "device action")
+    text = text.replace("the simulator", "the hardware service")
+    return text
+
+
 def build_prompt(
     arm: str,
     card: Any,
@@ -148,7 +181,7 @@ def build_prompt(
         robot=robot_words(adapter, primitives),
     )
     reference = api_reference(adapter.robot_cls, primitives=primitives)
-    return "\n\n".join(
+    text = "\n\n".join(
         [
             contract.rstrip(),
             "# API reference (the `robo` object)\n\n" + reference,
@@ -156,6 +189,9 @@ def build_prompt(
             card.render(),
         ]
     )
+    if adapter.name == "litearm_real":
+        text = _real_contract(text)
+    return text
 
 
 def _codex_argv(
@@ -552,6 +588,8 @@ def play_episode(
         "max_turns": max_turns,
         "budget_mode": "calls" if max_turns else "wall",
         "environment_success": False,
+        "environment_success_known": True,
+        "task_success": None,
         "status": "boot_error",
         "reason": None,
         "error": None,
@@ -585,6 +623,13 @@ def play_episode(
     try:
         toolkit, daemons = host.boot(cell, out_dir, rpent_root=rpent_root, **boot_options)
         result["host"]["boot_options"] = _recordable(boot_options)
+        runtime_metadata = getattr(host, "runtime_metadata", None)
+        if callable(runtime_metadata):
+            metadata = runtime_metadata(toolkit)
+            if isinstance(metadata, dict):
+                result["host"].update(metadata)
+                if "success_known" in metadata:
+                    result["environment_success_known"] = bool(metadata["success_known"])
         if runtime == "codex":
             result["host"]["codex_context"] = _codex_context_config(codex_home)
         result["host"]["sandbox"] = SANDBOX_DESCRIPTION
@@ -803,6 +848,11 @@ def play_episode(
             )
         _conclude(backend)
         result["environment_success"] = bool(backend.solved())
+        result["environment_success_known"] = bool(
+            getattr(backend, "environment_success_known", True)
+        )
+        if not result["environment_success_known"]:
+            result["task_success"] = None
         if (
             status == "completed"
             and arm_toolkit.turn_budget_exhausted
@@ -863,7 +913,34 @@ def play_episode(
         if server is not None:
             with contextlib.suppress(Exception):
                 server.stop()
+        if toolkit is not None and arm_toolkit is not None and hasattr(toolkit, "finish"):
+            toolkit.finish = arm_toolkit.finish
         stop_all(toolkit, daemons)
+        if toolkit is not None:
+            stop_metadata = getattr(host, "stop_metadata", None)
+            if callable(stop_metadata):
+                with contextlib.suppress(Exception):
+                    stop_info = stop_metadata(toolkit)
+                    if isinstance(stop_info, dict):
+                        result["host"]["stop"] = stop_info
+                        result["stop"] = stop_info
+                        if "environment_success_known" in stop_info:
+                            result["environment_success_known"] = bool(
+                                stop_info["environment_success_known"]
+                            )
+        result["task_success"] = (
+            None
+            if not result.get("environment_success_known", True)
+            else bool(result.get("environment_success"))
+        )
+        if not result.get("environment_success_known", True):
+            note = (
+                "task success is not measured on this path: finish(status=success) is the "
+                "model's claim, execution completion is separate, and environment_success "
+                "remains false"
+            )
+            if note not in result["notes"]:
+                result["notes"].append(note)
         result["total_wall_s"] = time.perf_counter() - started
         (out_dir / "result.json").write_text(
             json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -898,7 +975,11 @@ def build_parser(
 
     host = get_adapter(robot).host_module()
     parser = argparse.ArgumentParser(prog=prog, description=__doc__)
-    parser.add_argument("--robot", default="libero", help="libero | robocasa | robotwin | robodojo | robocoliseum")
+    parser.add_argument(
+        "--robot",
+        default="libero",
+        help="libero | robocasa | robotwin | robodojo | litearm | litearm_real | robocoliseum",
+    )
     parser.add_argument("--arm", choices=ARMS, required=True)
     host.add_cell_args(parser)
     host.add_boot_args(parser)

@@ -17,3 +17,24 @@ results/
 logs/
 # the built documentation (mkdocs build)
 site/
+
+# Real hardware site state.  The *.example.json files stay tracked; a station's
+# actual config, calibration, credentials, diagnostics and results are local.
+configs/litearm_real.json
+configs/litearm_real.*.json
+!configs/litearm_real.example.json
+!configs/litearm_real.offline.example.json
+configs/calibration/litearm_real.json
+configs/calibration/litearm_real.*.json
+!configs/calibration/litearm_real.example.json
+configs/**/*.local.json
+configs/credentials/
+runs_hw/
+runs/hardware/
+hardware_runs/
+tools/litearm_real/out/
+tools/litearm_real/diagnostics/
+tools/litearm_real/*.local.json
+wheelhouse/
+*.pem
+*.key

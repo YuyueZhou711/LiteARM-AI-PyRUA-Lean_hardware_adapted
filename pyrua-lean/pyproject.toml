@@ -37,6 +37,26 @@ robocoliseum = [
     "ik_solver @ https://github.com/AgibotTech/genie_sim/raw/a2bbec0c0e2d05f7cb5c13c9a75bcbc16ea229be/3rdparty/ik_solver-0.4.3-cp311-cp311-linux_x86_64.whl ; python_version == '3.11' and platform_machine == 'x86_64' and sys_platform == 'linux'",
     "ik_solver @ https://github.com/AgibotTech/genie_sim/raw/a2bbec0c0e2d05f7cb5c13c9a75bcbc16ea229be/3rdparty/ik_solver-0.4.3-cp312-cp312-linux_x86_64.whl ; python_version == '3.12' and platform_machine == 'x86_64' and sys_platform == 'linux'",
 ]
+# Agent side of the real LiteArm station: the runner, planner and perception.
+# No hardware SDK belongs here; the camera/SAM3 packages are optional and are
+# installed in the dedicated environment.
+hardware-agent = [
+    "numpy==1.26.4",
+    "pillow==13.0.0",
+    "scipy==1.17.1",
+    "opencv-python-headless==4.11.0.86",
+    "mcp>=1.8,<2",
+    "uvicorn",
+]
+# Device side: the service.  The vendor SDKs are installed from fixed wheels
+# built from the local checked-out sources (litearm-python 2.1.0 and
+# litegrip-python 2.2.0); they are deliberately not guessed as PyPI packages.
+hardware-device = [
+    "numpy==1.26.4",
+    "pillow==13.0.0",
+    "opencv-python-headless==4.11.0.86",
+    "pyserial>=3.4",
+]
 dev = [
     "build>=1.2",
     "pytest>=8.0",
@@ -57,12 +77,21 @@ Issues = "https://github.com/DAGroup-PKU/PyRUA-Lean/issues"
 
 [project.scripts]
 pyrualean = "pyrualean.cli:main"
+pyrualean-litearm-daemon = "pyrualean.hardware.daemon:main"
+pyrualean-litearm-smoke = "pyrualean.hardware.smoke:main"
+pyrualean-litearm-calibrate = "pyrualean.hardware.calibrate:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-pyrualean = ["knowledge/*.md", "codex-catalog-gpt-6-astra-fallback.json", "hosts/robocoliseum_ik/*"]
+pyrualean = [
+    "knowledge/*.md",
+    "codex-catalog-gpt-6-astra-fallback.json",
+    "hosts/robocoliseum_ik/*",
+    "hardware/assets/*.urdf",
+    "hardware/assets/*.md",
+]
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]

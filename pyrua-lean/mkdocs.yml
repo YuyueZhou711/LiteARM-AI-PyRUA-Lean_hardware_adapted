@@ -89,6 +89,7 @@ nav:
       - XPolicyLab:
           - RoboDojo: robots/robodojo.md
           - LiteArm: robots/litearm.md
+          - LiteArm Real: robots/litearm-real.md
       - RPent:
           - LIBERO-PRO: robots/libero.md
           - RoboTwin 2.0: robots/robotwin.md

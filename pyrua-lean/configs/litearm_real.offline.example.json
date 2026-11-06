@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "station_id": "litearm-demo-station",
+  "calibration": "calibration/litearm_real.example.json",
+  "service": {
+    "host": "127.0.0.1",
+    "port": 47321,
+    "connect_timeout_s": 5.0,
+    "request_timeout_s": 15.0,
+    "heartbeat_s": 2.0,
+    "heartbeat_timeout_s": 6.0,
+    "max_clock_skew_s": 0.5
+  },
+  "execution": {
+    "mode": "offline-fake",
+    "max_speed": 0.5,
+    "max_joint_step_rad": 0.2,
+    "max_segment_duration_s": 4.0,
+    "settle_tolerance_rad": 0.01,
+    "settle_timeout_s": 3.0,
+    "command_timeout_s": 60.0,
+    "start_tolerance_rad": 0.02,
+    "max_joint_speed_rad_s": 0.5,
+    "max_tcp_speed_m_s": 0.5
+  },
+  "devices": {
+    "left": {
+      "arm": {
+        "sdk": "litearm",
+        "port": "/dev/ttyACM0",
+        "min_firmware": "Litearm1.5.0",
+        "connect_timeout_s": 5.0,
+        "move_timeout_s": 20.0,
+        "read_timeout_s": 1.0
+      },
+      "gripper": {
+        "driver": "litegrip",
+        "channel": "can0",
+        "can_id": 8,
+        "calibration_path": null,
+        "force_n": 15.0,
+        "grasp_timeout_s": 5.0,
+        "hold_clearance_mm": 8.0,
+        "open_speed_mm_s": 40.0,
+        "close_speed_mm_s": 40.0
+      }
+    },
+    "right": {
+      "arm": {
+        "sdk": "litearm",
+        "port": "/dev/ttyACM1",
+        "min_firmware": "Litearm1.5.0",
+        "connect_timeout_s": 5.0,
+        "move_timeout_s": 20.0,
+        "read_timeout_s": 1.0
+      },
+      "gripper": {
+        "driver": "litegrip",
+        "channel": "can1",
+        "can_id": 8,
+        "calibration_path": null,
+        "force_n": 15.0,
+        "grasp_timeout_s": 5.0,
+        "hold_clearance_mm": 8.0,
+        "open_speed_mm_s": 40.0,
+        "close_speed_mm_s": 40.0
+      }
+    }
+  },
+  "cameras": {
+    "cam_head": {
+      "driver": "fake",
+      "index": 0,
+      "width": 640,
+      "height": 480,
+      "fps": 30,
+      "depth": true,
+      "timeout_s": 2.0,
+      "serial": null
+    },
+    "cam_left_wrist": {
+      "driver": "fake",
+      "index": 2,
+      "width": 640,
+      "height": 480,
+      "fps": 30,
+      "depth": false,
+      "timeout_s": 2.0
+    },
+    "cam_right_wrist": {
+      "driver": "fake",
+      "index": 4,
+      "width": 640,
+      "height": 480,
+      "fps": 30,
+      "depth": false,
+      "timeout_s": 2.0
+    }
+  },
+  "perception": {
+    "sam3": {
+      "mode": "http",
+      "endpoint": "http://192.168.55.1:8790",
+      "timeout_s": 60.0,
+      "checkpoint": null,
+      "cuda_device": null,
+      "min_score": 0.2
+    },
+    "max_object_height_m": 0.35,
+    "voxel_m": 0.005,
+    "max_voxels": 250000,
+    "depth_min_valid_ratio": 0.35
+  },
+  "snapshot": {
+    "max_age_s": 1.0,
+    "camera_joint_sync_s": 0.1,
+    "refresh_min_interval_s": 0.15,
+    "history": 128
+  },
+  "results": {
+    "directory": "runs/hardware",
+    "max_episode_actions": 300,
+    "max_wall_s": 1200.0
+  },
+  "safety": {
+    "stop_timeout_s": 5.0,
+    "joint_speed_confirm_rad_s": 0.05,
+    "require_operator_reset_after_fault": true,
+    "home_lift_m": 0.08
+  },
+  "fake": {
+    "time_scale": 0.02,
+    "object_present": true,
+    "object_width_m": 0.03
+  }
+}
