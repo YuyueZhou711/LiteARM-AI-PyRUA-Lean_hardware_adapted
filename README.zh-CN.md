@@ -5,7 +5,8 @@
 # LiteArm AI，PyRUA-Lean on RoboDojo
 
 本仓库包含整套链路的两端。策略服务器针对 LiteArm 工具编写机器人程序；RoboDojo 客户端在 Isaac Sim 中执行这些程序。仓库提供
-LiteArm 机器人资产、环境配置、评测脚本，以及官方 `stack_blocks` 运行所用的数据。
+LiteArm 机器人资产、环境配置、评测脚本，以及官方 `stack_blocks` 运行所用的数据。同一份 PyRUA-Lean 源码还包含真机路径，
+可不依赖 RoboDojo 或 Isaac Sim 直接驱动经过标定的 LiteArm / LiteGrip 工作站。
 
 ## 演示
 
@@ -36,6 +37,7 @@ RTX 4060 8 GB；策略服务器运行于 Jetson AGX Thor 128 GB。以上录制�
 | 路径 | 内容 |
 | --- | --- |
 | `pyrua-lean/` | PyRUA-Lean 源码，包含 LiteArm 适配器和工具 |
+| `pyrua-lean/src/pyrualean/hardware/` | 真机工作站服务与 agent 适配器：配置、标定、规划、感知和 RPC |
 | `robodojo/` | RoboDojo 源码，包含 LiteArm 机器人和环境配置 |
 | `integrations/xpolicylab/` | XPolicyLab 子模块中未进入其上游仓库的改动 |
 | `assets/litearm/` | LiteArm URDF、USD、碰撞/驱动配置和 cuRobo 模板 |
@@ -54,8 +56,8 @@ RTX 4060 8 GB；策略服务器运行于 Jetson AGX Thor 128 GB。以上录制�
 ## 单机快速开始
 
 ```bash
-git clone https://github.com/nexform-tech/LiteARM-AI-PyRUA-Lean.git
-cd LiteARM-AI-PyRUA-Lean
+git clone https://github.com/YuyueZhou711/LiteARM-AI-PyRUA-Lean_hardware_adapted.git
+cd LiteARM-AI-PyRUA-Lean_hardware_adapted
 bash scripts/setup.sh
 bash scripts/fetch_assets.sh
 cp config/env.example.sh config/env.sh
@@ -93,12 +95,36 @@ POLICY_HOST=192.168.1.10 bash scripts/run_client.sh
 `scripts/fetch_assets.sh --policy-only` 只下载 SAM3 检查点。仿真器主机会下载 RoboDojo 数据集并安装
 LiteArm 资产；`--skip-sam3` 让该主机不下载检查点。
 
+## 真机
+
+`pyrua-lean/src/pyrualean/hardware/` 可直接运行经过标定的 LiteArm / LiteGrip 工作站：设备侧服务持有机械臂、夹爪和
+相机，agent 侧适配器暴露同一套 `robo` API。该路径不导入或启动 RoboDojo，也不需要 Isaac Sim。
+
+```bash
+# 设备主机：服务独占硬件，默认 read-only
+conda env create -f pyrua-lean/environments/litearm-device.yml
+LITEARM_HW_CONFIG=/absolute/path/station.json \
+  bash pyrua-lean/scripts/litearm_hardware_service.sh
+
+# Agent 主机：运行一个 episode（offline-fake 不需要硬件）
+LITEARM_HW_CONFIG=/absolute/path/station.json \
+LITEARM_HW_MODE=offline-fake \
+LITEARM_HW_INSTRUCTION='stack the blocks' \
+  bash pyrua-lean/scripts/litearm_hardware_play.sh
+```
+
+把 `pyrua-lean/configs/litearm_real.example.json` 和
+`pyrua-lean/configs/calibration/litearm_real.example.json` 复制成本地、被 git 忽略的文件，并在
+`execution.mode=live` 前完成工作站测量。站点格式、SDK 版本、服务协议和安全规则见
+[LiteArm Real](pyrua-lean/docs/robots/litearm-real.md)。真机路径没有任务成功判定器，也不会写入 RoboDojo 结果。
+
 ## 文档
 
 - [文档索引](docs/index.md)
 - [安装](docs/setup.md)：前置条件、单机与分机安装、资产下载和验证。
 - [使用](docs/usage.md)：模型配置、单机与分机评测。
 - [架构](docs/architecture.md)：组件、数据流和上游版本。
+- [真机](pyrua-lean/docs/robots/litearm-real.md)：Isaac Sim 之外的 LiteArm / LiteGrip 工作站。
 
 ## 许可
 

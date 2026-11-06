@@ -17,7 +17,7 @@ test = ["pytest>=7", "numpy>=1.24", "pyyaml>=6", "pillow>=9"]
 litearm-ai-pyrua-lean = "litearm_ai_pyrua_lean.__main__:main"
 
 [project.urls]
-Homepage = "https://github.com/nexform-tech/LiteARM-AI-PyRUA-Lean"
+Homepage = "https://github.com/YuyueZhou711/LiteARM-AI-PyRUA-Lean_hardware_adapted"
 
 [tool.setuptools.packages.find]
 where = ["src"]

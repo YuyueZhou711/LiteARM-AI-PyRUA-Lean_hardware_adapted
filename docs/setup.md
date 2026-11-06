@@ -22,8 +22,8 @@ at least 16 GB.
 ## 2. Clone the repository
 
 ```bash
-git clone https://github.com/nexform-tech/LiteARM-AI-PyRUA-Lean.git
-cd LiteARM-AI-PyRUA-Lean
+git clone https://github.com/YuyueZhou711/LiteARM-AI-PyRUA-Lean_hardware_adapted.git
+cd LiteARM-AI-PyRUA-Lean_hardware_adapted
 ```
 
 ## 3. Install the environments
@@ -153,3 +153,12 @@ The commands in this guide encode the manual steps used on the reference machine
 there. A fresh-host run of `scripts/setup.sh` and `scripts/fetch_assets.sh` has
 not been verified; report differences with the output of `doctor` and the
 failing command.
+
+## Real hardware
+
+The real-hardware station is a separate path with its own environments. It does
+not need Isaac Sim, the RoboDojo dataset or the policy-server conda environment.
+Follow [LiteArm Real](../pyrua-lean/docs/robots/litearm-real.md): create the
+`litearm-hw-device` and `pyrualean-hw-agent` environments from
+`pyrua-lean/environments/`, copy the example station and calibration files, and
+start the service in its default `read-only` mode first.

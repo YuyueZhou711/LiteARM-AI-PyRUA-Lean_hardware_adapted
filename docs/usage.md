@@ -113,6 +113,15 @@ Exit code 0 means every trial passed the lift and transport checks, 1 means a
 grasp threshold failed, and 2 means the simulation or script failed. The script
 is a diagnostic; it does not produce a benchmark result.
 
+## Real hardware
+
+The hardware path does not use `scripts/run_eval.sh` or RoboDojo. It runs the
+device service (`pyrualean.hardware.daemon`) and one episode through
+`pyrua-lean/scripts/litearm_hardware_play.sh`; see
+[LiteArm Real](../pyrua-lean/docs/robots/litearm-real.md) for the station file,
+execution modes and calibration requirements. The hardware path has no
+task-success verdict and writes its own run directories under `runs_hw/`.
+
 ## Troubleshooting
 
 **Do not** start the policy server in the `RoboDojo` environment: its
